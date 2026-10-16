@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme {
+  --font-volkhov: "Volkhov", Georgia, serif;
+  --font-poppins: "Poppins", sans-serif;
+  --color-fasco-black: #000000;
+  --color-fasco-muted: #8a8a8a;
+  --color-fasco-line: #e5e5e5;
+  --color-fasco-bg: #ffffff;
+  --color-fasco-soft: #fafafa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-poppins);
+  color: #000;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-volkhov {
+  font-family: var(--font-volkhov);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+.underline-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0.5rem 0;
+  background: transparent;
+  font-family: var(--font-poppins);
+  font-size: 1rem;
+}
+
+.underline-input::placeholder {
+  color: #8a8a8a;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.9rem 2rem;
+  border: 1px solid #000;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #222;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.9rem 2rem;
+  border: 1px solid #000;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background: #000;
+  color: #fff;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease both;
+}
+
+.animate-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-3 {
+  animation-delay: 0.3s;
+}
