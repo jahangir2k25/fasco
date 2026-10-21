@@ -15,10 +15,11 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const clientOrigin = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, '');
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: clientOrigin,
     credentials: true,
   })
 );
@@ -29,7 +30,7 @@ app.get('/', (_req, res) => {
   res.json({
     status: 'ok',
     message: 'FASCO API is running',
-    frontend: process.env.CLIENT_URL || 'http://localhost:5173',
+    frontend: clientOrigin,
     health: '/api/health',
   });
 });

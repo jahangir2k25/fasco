@@ -48,6 +48,16 @@ npm run dev
 
 App: `http://localhost:5173`
 
+## Production deployment
+
+- The production frontend uses `https://fasco-z7zn.onrender.com/api` by default. Set
+  `VITE_API_URL` in Vercel to override it; the value should include `/api`.
+- Set the Render `CLIENT_URL` environment variable to
+  `https://fasco-theta.vercel.app` (without a trailing slash). The server also
+  normalizes a trailing slash automatically.
+- Set `MONGO_URI` and `JWT_SECRET` in Render. The in-memory fallback is temporary:
+  accounts created while MongoDB is disconnected are lost when the server restarts.
+
 ## Demo discount code
 
 On checkout, use **`FASCO10`** for 10% off.
