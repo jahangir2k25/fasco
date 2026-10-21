@@ -46,7 +46,14 @@ app.get('/api/health', (_req, res) => {
 const useMemory = () => mongoose.connection.readyState !== 1;
 
 app.use('/api', (req, res, next) => {
-  if (useMemory() && req.path.startsWith('/auth')) return memoryRoutes(req, res, next);
+  if (useMemory() && req.path.startsWith('/auth')) {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(503).json({
+        message: 'Authentication is temporarily unavailable because the database is disconnected.',
+      });
+    }
+    return memoryRoutes(req, res, next);
+  }
   if (useMemory() && req.path.startsWith('/products')) return memoryRoutes(req, res, next);
   if (useMemory() && req.path.startsWith('/orders')) return memoryRoutes(req, res, next);
   next();

@@ -55,8 +55,13 @@ App: `http://localhost:5173`
 - Set the Render `CLIENT_URL` environment variable to
   `https://fasco-theta.vercel.app` (without a trailing slash). The server also
   normalizes a trailing slash automatically.
-- Set `MONGO_URI` and `JWT_SECRET` in Render. The in-memory fallback is temporary:
-  accounts created while MongoDB is disconnected are lost when the server restarts.
+- Set `NODE_ENV=production`, `MONGO_URI`, and `JWT_SECRET` in Render. If MongoDB is
+  disconnected in production, authentication requests return an error instead of
+  creating temporary accounts in memory. The in-memory fallback remains available
+  for local development.
+- In MongoDB Atlas, allow Render's outbound connections in Network Access and use
+  a database user whose credentials are URL-encoded in `MONGO_URI`. The URI must
+  include the database name (for example, `/fasco`).
 
 ## Demo discount code
 
