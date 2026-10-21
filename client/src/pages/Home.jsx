@@ -19,11 +19,12 @@ const categories = [
   'Discount Deals',
 ];
 
-const heroImages = [
-  'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&q=80',
-  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=700&q=80',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=80',
-];
+const heroImages = {
+  left: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&q=85',
+  group: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85',
+  right: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=85',
+  bottom: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=900&q=85',
+};
 
 const testimonials = [
   {
@@ -90,28 +91,50 @@ export default function Home() {
       <Header />
 
       {/* Hero */}
-      <section className="mx-auto max-w-[1280px] px-4 py-10 md:px-8 md:py-14">
-        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-          <div className="relative overflow-hidden animate-fade-up md:row-span-2 min-h-[280px] md:min-h-[520px]">
-            <img src={heroImages[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <section className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 md:px-8 md:py-10">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-[1fr_1.08fr_1fr] md:gap-6">
+          <div className="col-span-2 flex min-h-[390px] flex-col items-center justify-center gap-3 text-center animate-fade-up md:col-span-1 md:col-start-2 md:row-start-1 md:min-h-[560px] md:gap-0">
+            <img
+              src={heroImages.group}
+              alt="A group of models wearing the latest collection"
+              className="h-[clamp(76px,10vw,116px)] w-full rounded-lg bg-[#e5e5e5] object-cover object-[center_35%]"
+            />
+            <div className="flex flex-1 flex-col items-center justify-center py-5">
+              <h1 className="font-poppins text-[clamp(2rem,5.2vw,4.5rem)] font-semibold leading-none tracking-[0.025em] text-[#4a4a4a]">
+                ULTIMATE
+              </h1>
+              <p
+                aria-label="Sale"
+                className="hero-sale-outline -mt-1 font-poppins text-[clamp(4rem,9vw,7rem)] font-medium leading-[0.98] tracking-[0.025em]"
+              >
+                SALE
+              </p>
+              <p className="mt-3 text-xs tracking-[0.16em] text-[#4a4a4a] sm:text-sm">
+                NEW COLLECTION
+              </p>
+              <Link to="/shop" className="btn-primary mt-4 min-w-[160px] rounded-lg px-8 py-3 text-sm shadow-lg shadow-black/15">
+                SHOP NOW
+              </Link>
+            </div>
+            <img
+              src={heroImages.bottom}
+              alt="Models in the new FASCO collection"
+              className="h-[clamp(76px,10vw,116px)] w-full rounded-lg bg-[#f3a08e] object-cover object-[center_35%]"
+            />
           </div>
-          <div className="flex min-w-0 flex-col items-center justify-center bg-fasco-soft px-4 py-12 text-center animate-fade-up animate-delay-1 sm:px-6 sm:py-16 md:py-0">
-            <p className="whitespace-nowrap font-volkhov text-[clamp(2rem,10vw,3.75rem)] tracking-[0.12em] sm:tracking-[0.2em]">
-              ULTIMATE
-            </p>
-            <p className="mt-2 whitespace-nowrap font-volkhov text-[clamp(3.5rem,16vw,5.5rem)] font-bold tracking-[0.12em] sm:tracking-widest">
-              SALE
-            </p>
-            <p className="mt-4 text-sm tracking-wide">NEW COLLECTION</p>
-            <Link to="/shop" className="btn-primary mt-8">
-              SHOP NOW
-            </Link>
+          <div className="relative order-2 min-h-[250px] overflow-hidden rounded-lg bg-[#e5e5e5] animate-fade-up animate-delay-1 md:order-none md:col-start-1 md:row-start-1 md:min-h-[560px]">
+            <img
+              src={heroImages.left}
+              alt="Model wearing a contemporary outfit"
+              className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+            />
           </div>
-          <div className="relative min-h-[220px] overflow-hidden animate-fade-up animate-delay-2">
-            <img src={heroImages[1]} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          </div>
-          <div className="relative min-h-[220px] overflow-hidden animate-fade-up animate-delay-3 md:col-start-3">
-            <img src={heroImages[2]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="relative order-3 min-h-[250px] overflow-hidden rounded-lg bg-[#e5e5e5] animate-fade-up animate-delay-2 md:order-none md:col-start-3 md:row-start-1 md:min-h-[560px]">
+            <img
+              src={heroImages.right}
+              alt="Model showcasing a modern fashion look"
+              className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+            />
           </div>
         </div>
       </section>
@@ -210,9 +233,8 @@ export default function Home() {
               key={c}
               type="button"
               onClick={() => setActiveCat(c)}
-              className={`px-4 py-2 text-sm transition ${
-                activeCat === c ? 'bg-black text-white' : 'bg-fasco-soft hover:bg-black/10'
-              }`}
+              className={`px-4 py-2 text-sm transition ${activeCat === c ? 'bg-black text-white' : 'bg-fasco-soft hover:bg-black/10'
+                }`}
             >
               {c}
             </button>

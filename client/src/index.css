@@ -38,6 +38,11 @@ body {
   font-family: var(--font-poppins);
 }
 
+.hero-sale-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px #4a4a4a;
+}
+
 input:focus,
 select:focus,
 textarea:focus,

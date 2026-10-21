@@ -32,18 +32,19 @@ export default function Shop() {
   const color = searchParams.get('color') || '';
   const category = searchParams.get('category') || '';
   const tag = searchParams.get('tag') || '';
+  const search = searchParams.get('search') || '';
 
   useEffect(() => {
     api
       .get('/products', {
-        params: { page, limit: 9, sort, size, color, category, tag },
+        params: { page, limit: 9, sort, size, color, category, tag, search },
       })
       .then((res) => {
         setProducts(res.data.products);
         setTotal(res.data.total);
         setPages(res.data.pages);
       });
-  }, [page, sort, size, color, category, tag]);
+  }, [page, sort, size, color, category, tag, search]);
 
   const setFilter = (key, value) => {
     const next = new URLSearchParams(searchParams);
@@ -63,7 +64,9 @@ export default function Shop() {
           </Link>{' '}
           / Fashion
         </p>
-        <h1 className="mt-2 font-volkhov text-4xl">Fashion</h1>
+        <h1 className="mt-2 font-volkhov text-4xl">
+          {search ? `Search results for “${search}”` : 'Fashion'}
+        </h1>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[240px_1fr]">
           <aside>

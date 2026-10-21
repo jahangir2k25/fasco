@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import {
   FiSearch,
   FiUser,
@@ -11,20 +11,37 @@ import {
 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const links = [
   { to: '/', label: 'Home' },
+  { to: '/deals', label: 'Deals' },
+  { to: '/new-arrivals', label: 'New Arrivals' },
+  { to: '/packages', label: 'Packages' },
   { to: '/shop', label: 'Shop' },
   { to: '/shop?category=Women%27s%20Fashion', label: 'Products' },
-  { to: '/#arrivals', label: 'Pages' },
+  // { to: '/#arrivals', label: 'Pages' },
 ];
 
 export default function Header({ minimal = false }) {
+  const navigate = useNavigate();
   const { count } = useCart();
   const { user, logout } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const headerRef = useRef(null);
+  const searchInputRef = useRef(null);
   const menuRef = useRef(null);
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchLoading(false);
+  };
 
   useEffect(() => {
     const onClick = (e) => {
@@ -36,9 +53,60 @@ export default function Header({ minimal = false }) {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  useEffect(() => {
+    const onClick = (e) => {
+      if (headerRef.current && !headerRef.current.contains(e.target)) {
+        closeSearch();
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    if (!searchOpen || !searchTerm.trim()) return undefined;
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError('');
+      try {
+        const { data } = await api.get('/products', {
+          params: { search: searchTerm.trim(), limit: 6 },
+          signal: controller.signal,
+        });
+        setSearchResults(data.products);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setSearchError(error.response?.data?.message || 'Could not load search results.');
+          setSearchResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setSearchLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [searchOpen, searchTerm]);
+
+  const submitSearch = (e) => {
+    e.preventDefault();
+    const query = searchTerm.trim();
+    if (!query) return;
+    closeSearch();
+    navigate(`/shop?search=${encodeURIComponent(query)}`);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-fasco-line">
-      <div className="relative mx-auto flex max-w-[1280px] items-center justify-between px-4 py-5 md:px-8">
+      <div ref={headerRef} className="relative mx-auto flex max-w-[1280px] items-center justify-between px-4 py-5 md:px-8">
         <Link to="/" className="font-volkhov text-[28px] md:text-[32px] tracking-wide">
           FASCO
         </Link>
@@ -70,10 +138,22 @@ export default function Header({ minimal = false }) {
         <div className="flex items-center gap-3 text-xl md:gap-4">
           {!minimal && (
             <>
-              <button type="button" aria-label="Search" className="hidden hover:opacity-60 md:block">
+              <button
+                type="button"
+                onClick={() => {
+                  const nextOpen = !searchOpen;
+                  setSearchOpen(nextOpen);
+                  if (nextOpen && searchTerm.trim()) setSearchLoading(true);
+                  else setSearchLoading(false);
+                }}
+                aria-label={searchOpen ? 'Close search' : 'Open search'}
+                aria-expanded={searchOpen}
+                aria-controls="product-search"
+                className="cursor-pointer hover:opacity-60"
+              >
                 <FiSearch />
               </button>
-              <button type="button" aria-label="Wishlist" className="hidden hover:opacity-60 md:block">
+              <button type="button" aria-label="Wishlist" className="hidden hover:opacity-60 md:block cursor-pointer">
                 <FiHeart />
               </button>
             </>
@@ -157,6 +237,78 @@ export default function Header({ minimal = false }) {
             )}
           </Link>
         </div>
+
+        {!minimal && searchOpen && (
+          <div
+            id="product-search"
+            className="absolute left-4 right-4 top-full z-50 border border-fasco-line bg-white p-4 shadow-xl md:left-8 md:right-8"
+          >
+            <form onSubmit={submitSearch} className="flex items-center gap-3 border-b border-fasco-line pb-3">
+              <FiSearch className="shrink-0 text-fasco-muted" />
+              <input
+                ref={searchInputRef}
+                type="search"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setSearchLoading(Boolean(e.target.value.trim()));
+                  setSearchResults([]);
+                  setSearchError('');
+                }}
+                placeholder="Search products by name..."
+                aria-label="Search products by name"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSearchLoading(false);
+                    setSearchResults([]);
+                    setSearchError('');
+                  }}
+                  aria-label="Clear search"
+                  className="text-xl text-fasco-muted hover:text-black"
+                >
+                  <FiX />
+                </button>
+              )}
+              <button type="submit" className="text-sm font-medium hover:opacity-60">
+                Search
+              </button>
+            </form>
+
+            {searchTerm.trim() && (
+              <div className="max-h-[min(60vh,360px)] overflow-y-auto pt-2">
+                {searchLoading && <p className="py-4 text-sm text-fasco-muted">Searching products...</p>}
+                {searchError && <p role="alert" className="py-4 text-sm text-red-600">{searchError}</p>}
+                {!searchLoading && !searchError && searchResults.length === 0 && (
+                  <p className="py-4 text-sm text-fasco-muted">No products found.</p>
+                )}
+                {!searchLoading && searchResults.map((product) => (
+                  <Link
+                    key={product._id}
+                    to={`/product/${product._id}`}
+                    onClick={closeSearch}
+                    className="flex items-center gap-3 border-b border-fasco-line py-2 last:border-0 hover:bg-fasco-soft"
+                  >
+                    <img
+                      src={product.images?.[0]}
+                      alt=""
+                      className="h-14 w-12 shrink-0 bg-fasco-soft object-cover"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium">{product.name}</span>
+                      <span className="block text-xs text-fasco-muted">{product.brand}</span>
+                    </span>
+                    <span className="text-sm">${Number(product.price).toFixed(2)}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {!minimal && mobileMenuOpen && (
           <nav
