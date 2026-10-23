@@ -78,6 +78,7 @@ router.get('/products', async (req, res) => {
     if (search) filter.name = { $regex: search, $options: 'i' };
 
     let sortOption = { createdAt: -1 };
+    if (sort === 'newest') sortOption = { createdAt: -1, _id: -1 };
     if (sort === 'price-asc') sortOption = { price: 1 };
     if (sort === 'price-desc') sortOption = { price: -1 };
     if (sort === 'rating') sortOption = { rating: -1 };

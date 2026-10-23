@@ -10,10 +10,12 @@ import PeakyBanner from '../components/PeakyBanner';
 import Newsletter from '../components/Newsletter';
 import Countdown from '../components/Countdown';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Product() {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [activeImg, setActiveImg] = useState(0);
@@ -48,6 +50,7 @@ export default function Product() {
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
+  const wishlisted = isWishlisted(product._id);
 
   return (
     <div>
@@ -167,8 +170,16 @@ export default function Product() {
               <button type="button" className="inline-flex items-center gap-2 hover:text-black">
                 <FiRefreshCw /> Compare
               </button>
-              <button type="button" className="inline-flex items-center gap-2 hover:text-black">
-                <FiHeart /> Add to wishlist
+              <button
+                type="button"
+                onClick={() => (
+                  wishlisted ? removeFromWishlist(product._id) : addToWishlist(product)
+                )}
+                aria-pressed={wishlisted}
+                className="inline-flex items-center gap-2 hover:text-black"
+              >
+                <FiHeart className={wishlisted ? 'fill-current text-red-500' : ''} />
+                {wishlisted ? 'Added to wishlist' : 'Add to wishlist'}
               </button>
               <button type="button" className="inline-flex items-center gap-2 hover:text-black">
                 <FiShare2 /> Share

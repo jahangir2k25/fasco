@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
 
 const links = [
@@ -26,7 +27,9 @@ const links = [
 export default function Header({ minimal = false }) {
   const navigate = useNavigate();
   const { count } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const { user, logout } = useAuth();
+  const navigationLinks = links.filter((link) => link.label !== 'Shop' || user);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -107,13 +110,17 @@ export default function Header({ minimal = false }) {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-fasco-line">
       <div ref={headerRef} className="relative mx-auto flex max-w-[1280px] items-center justify-between px-4 py-5 md:px-8">
-        <Link to="/" className="font-volkhov text-[28px] md:text-[32px] tracking-wide">
+        <Link
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })}
+          className="font-volkhov text-[28px] md:text-[32px] tracking-wide"
+        >
           FASCO
         </Link>
 
         {!minimal && (
           <nav aria-label="Main navigation" className="hidden items-center gap-8 md:flex">
-            {links.map((link) => (
+            {navigationLinks.map((link) => (
               <NavLink
                 key={link.label}
                 to={link.to}
@@ -153,9 +160,18 @@ export default function Header({ minimal = false }) {
               >
                 <FiSearch />
               </button>
-              <button type="button" aria-label="Wishlist" className="hidden hover:opacity-60 md:block cursor-pointer">
+              <Link
+                to="/wishlist"
+                aria-label={`Wishlist${wishlistCount ? `, ${wishlistCount} items` : ''}`}
+                className="relative cursor-pointer hover:opacity-60"
+              >
                 <FiHeart />
-              </button>
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
             </>
           )}
 
@@ -183,7 +199,7 @@ export default function Header({ minimal = false }) {
                 <span className="flex h-8 w-8 items-center justify-center bg-black text-xs font-semibold text-white">
                   {(user.firstName?.[0] || 'U').toUpperCase()}
                 </span>
-                <span className="hidden max-w-[120px] truncate font-medium md:inline">
+                <span className="hidden max-w-30 truncate font-medium md:inline">
                   {user.firstName}
                 </span>
                 <FiChevronDown className="text-base" />
@@ -316,7 +332,7 @@ export default function Header({ minimal = false }) {
             aria-label="Mobile navigation"
             className="absolute left-0 right-0 top-full border-t border-fasco-line bg-white px-4 py-3 shadow-lg md:hidden"
           >
-            {links.map((link) => (
+            {navigationLinks.map((link) => (
               <NavLink
                 key={link.label}
                 to={link.to}

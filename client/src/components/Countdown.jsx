@@ -9,14 +9,29 @@ function getTimeLeft(target) {
   return { days, hours, mins, secs };
 }
 
+function getNextTarget(daysAhead) {
+  const interval = daysAhead * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  return now + (interval - (now % interval));
+}
+
 export default function Countdown({ daysAhead = 5 }) {
-  const [target] = useState(() => Date.now() + daysAhead * 24 * 60 * 60 * 1000);
+  const [target, setTarget] = useState(() => getNextTarget(daysAhead));
   const [time, setTime] = useState(() => getTimeLeft(target));
 
   useEffect(() => {
-    const id = setInterval(() => setTime(getTimeLeft(target)), 1000);
+    const id = setInterval(() => {
+      if (Date.now() >= target) {
+        const nextTarget = getNextTarget(daysAhead);
+        setTarget(nextTarget);
+        setTime(getTimeLeft(nextTarget));
+        return;
+      }
+
+      setTime(getTimeLeft(target));
+    }, 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [daysAhead, target]);
 
   const blocks = [
     { label: 'Days', value: time.days },
@@ -30,7 +45,7 @@ export default function Countdown({ daysAhead = 5 }) {
       {blocks.map((b) => (
         <div
           key={b.label}
-          className="min-w-[64px] bg-white px-3 py-2 text-center shadow-md shadow-black/10"
+          className="min-w-[64px] bg-white px-3 py-2 text-center text-black shadow-md shadow-black/10"
         >
           <p className="text-xl font-semibold">{String(b.value).padStart(2, '0')}</p>
           <p className="text-xs text-fasco-muted">{b.label}</p>

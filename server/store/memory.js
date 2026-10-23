@@ -29,7 +29,9 @@ export const memoryProducts = {
       list = list.filter((p) => re.test(p.name));
     }
 
-    if (sort?.price === 1) list.sort((a, b) => a.price - b.price);
+    if (sort?.createdAt === -1) {
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sort?.price === 1) list.sort((a, b) => a.price - b.price);
     else if (sort?.price === -1) list.sort((a, b) => b.price - a.price);
     else if (sort?.rating === -1) list.sort((a, b) => b.rating - a.rating);
 

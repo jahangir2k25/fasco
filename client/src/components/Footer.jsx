@@ -16,7 +16,7 @@ export default function Footer() {
         </div>
       </div>
       <p className="pb-8 text-center text-xs text-fasco-muted">
-        Copyright © 2022 Xpro . All Rights Reseved.
+        Copyright © 2026 || Developed by Raj-Diversion . All Rights Reseved.
       </p>
     </footer>
   );
